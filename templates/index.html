@@ -1,7 +1,40 @@
 {% extends "template.html" %}
 
+{% block head%}
+<link href="static/index.css" rel="stylesheet">
+{% endblock %}
+
 {% block body %}
 
-Hello!
+<main>
+    <div class="container text-center pt-3">
+        <p class="h1 pt-5">Mobility</p>
+        <p class="h2 pb-2">Always find the right path for you.</p>
+        <a href="/routing"><button class="btn btn-primary btn-lg">Find a path</button></a>
+    </div>
+    <div class="container pt-64">
+        <div class="row">
+            <div class="col pt-128">
+            <span class="h4 text-left">Avoid obstacles in your route, using information from your peers.</span>
+            </div>
+            <div class="col w-25">
+            <img id="walk" src="https://image.cnbcfm.com/api/v1/image/106666956-1597694787011-2018-09-22T014903Z_502209526_RC131D7A3900_RTRMADP_3_USA-UNIVERSITY-UNC.jpg?v=1597694880&w=1600&h=900">
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="row pt-32">
+            <div class="col">
+                <img id="walk2" src="https://snworksceo.imgix.net/dth/191ce117-6ae9-4d7b-8b7c-0eb7b9f716a9.sized-1000x1000.jpg?w=1000">
+            </div>
+            <div class="col pt-128">
+                <span class="h4 text-right pt-32">Report accessibility intrusions to help others' commute.</span>
+            </div>
+        </div>
+    </div>
+    <div class="container text-center pt-64">
+        <a href="/index"><button class="btn btn-primary btn-lg btn-block">View the map</button></a>
+    </div>
+</main>
 
 {% endblock %}
