@@ -1,0 +1,78 @@
+{% extends "template.html" %}
+<!-- this is for the homepage -->
+
+{% block body %}
+<div class="row">
+    <div class="col-md-4" id="map">
+        <iframe 
+            width="425" 
+            height="350" 
+            frameborder="0" 
+            scrolling="no" 
+            marginheight="0" 
+            marginwidth="0" 
+            src="https://www.openstreetmap.org/export/embed.html?bbox=-79.09950256347656%2C35.88703350826656%2C-79.04113769531251%2C35.92276788018289&amp;layer=mapnik" style="border: 1px solid black">
+        </iframe>
+        <br/>
+        <small><a href="https://www.openstreetmap.org/#map=14/35.9049/-79.0703">View Larger Map</a></small>
+    </div>
+
+    <!-- <div class="b-example-divider"></div> -->
+
+    <div class="col-md-8" id="concerns">
+        <div class="d-flex flex-column align-items-stretch flex-shrink-0 bg-white" style="width: 380px;">
+            <a href="/concerns" class="d-flex align-items-center flex-shrink-0 p-3 link-dark text-decoration-none border-bottom">
+              <svg class="bi me-2" width="30" height="24"><use xlink:href="#bootstrap"></use></svg>
+              <span class="fs-5 fw-semibold">Comments</span>
+            </a>
+            <div class="list-group list-group-flush border-bottom scrollarea">
+                <button type="button" class="btn btn-primary list-group-item list-group-item-action py-3 lh-tight" data-toggle="modal" data-target="#exampleModalLong"></button>
+                    <a href="#" class="">
+                        <div class="d-flex w-100 align-items-center justify-content-between">
+                            <strong class="mb-1">Morrison ramp died</strong>
+                            <small class="text-muted">5/11/22</small>
+                        </div>
+                        <div class="col-10 mb-1 small">Morrison ramp got blocked off</div>
+                        <div class="col-10 mb-1 small">Status: Broken</div>
+                    </a>
+                </button>
+                {% for item in items %}
+                <a href="#" class="list-group-item list-group-item-action py-3 lh-tight">
+                    <div class="d-flex w-100 align-items-center justify-content-between">
+                        <strong class="mb-1">{{item.heading}}</strong>
+                        <small class="text-muted">{{item.date}}</small>
+                    </div>
+                    <div class="col-10 mb-1 small">{{item.description}}</div>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalLong">
+Launch demo modal
+</button>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <span>Stuff</span>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary">Save changes</button>
+        </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
