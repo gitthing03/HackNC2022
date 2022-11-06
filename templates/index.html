@@ -1,40 +1,55 @@
 {% extends "base.html" %}
 
 {% block head%}
-<link href="{{url_for('static', filename='css/index.css')}}" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
 {% endblock %}
 
 {% block body %}
+    <main class="gradient-custom">
+        <div class="container pt-3 text-center">
+            <p class="h1 pt-5">Mobility</p>
+            <p class="h2 pb-3">Always find the right path for you.</p>
 
-<main class="gradient-custom">
-    <div class="container text-center pt-3">
-        <p class="h1 pt-5">Mobility</p>
-        <p class="h2 pb-2">Always find the right path for you.</p>
-        <a href="{{url_for('directions')}}"><button class="btn btn-primary btn-lg mt-12" style="font-size:1.8em;">Find a path</button></a>
-    </div>
-    <div class="container pt-64" style="z-index: 2;">
-        <div class="row">
-            <div class="col pt-128">
-            <p class="h4 text-left justify pr-128" id="walktext">Avoid obstacles in your route, using information from your peers.</p>
-            </div>
-            <div class="col">
-            <img id="walk" src="https://image.cnbcfm.com/api/v1/image/106666956-1597694787011-2018-09-22T014903Z_502209526_RC131D7A3900_RTRMADP_3_USA-UNIVERSITY-UNC.jpg?v=1597694880&w=1600&h=900">
+            <a class="btn btn-primary btn-lg mt-12" href="{{ url_for('directions') }}" style="font-size: 1.8em;">
+                Find a path
+            </a>
+        </div>
+
+        <div class="container pt-64">
+            <div class="row">
+                <div class="col pt-128">
+                    <p class="fs-1 fw-light justify pr-128 text-left">
+                        Avoid obstacles in your route, using information from your peers.
+                    </p>
+                </div>
+
+                <div class="col">
+                    <img id="walk" src="https://image.cnbcfm.com/api/v1/image/106666956-1597694787011-2018-09-22T014903Z_502209526_RC131D7A3900_RTRMADP_3_USA-UNIVERSITY-UNC.jpg?v=1597694880&w=1600&h=900">
+                </div>
             </div>
         </div>
-    </div>
-    <div class="container" style="z-index:1;">
-        <div class="row">
-            <div class="col">
-                <img id="walk2" src="https://snworksceo.imgix.net/dth/191ce117-6ae9-4d7b-8b7c-0eb7b9f716a9.sized-1000x1000.jpg?w=1000">
-            </div>
-            <div class="col pt-128" id="walk2text">
-                <p class="h4 text-right justify pt-64 pl-128">Report accessibility intrusions to help others' commute.</p>
+
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <img id="walk2" src="https://snworksceo.imgix.net/dth/191ce117-6ae9-4d7b-8b7c-0eb7b9f716a9.sized-1000x1000.jpg?w=1000">
+                </div>
+
+                <div class="col pt-128">
+                    <p class="fs-1 fw-light justify pl-128 pt-64 text-right">
+                        Report accessibility intrusions to help others' commute.
+                    </p>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="container text-center pt-64 pb-96">
-        <a href="{{url_for('map_')}}"><button class="btn btn-primary btn-lg btn-block" style="font-size: 3em; ">View the map</button></a>
-    </div>
-</main>
 
+        <div class="container pb-96 pt-64 text-center">
+            <a
+                class="btn btn-primary btn-lg btn-block"
+                href="{{ url_for('map_') }}"
+                style="font-size: 3em;">
+                View the map
+            </a>
+        </div>
+    </main>
 {% endblock %}

@@ -1,20 +1,5 @@
-#walk {
-  width: 160%;
-  margin-left: -65px;
-  z-index: 2;
-}
-#walk2 {
-  width: 150%;
-  margin-left: -300px;
-  margin-top: -80px;
-  z-index: 1;
-}
-
 body {
   overflow-x: hidden;
-}
-.h1 {
-  font-size: 6em;
 }
 
 /* https://mdbootstrap.com/docs/standard/tools/design/gradients/  */
@@ -27,4 +12,19 @@ body {
 
   /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
   background: linear-gradient(to bottom, rgba(248,248,251,1), rgba(117,169,205,1))
+}
+
+.h1 {
+  font-size: 6em;
+}
+
+#walk {
+  width: 160%;
+  margin-left: -65px;
+}
+
+#walk2 {
+  width: 150%;
+  margin-left: -300px;
+  margin-top: -80px;
 }
