@@ -51,8 +51,8 @@ def get_router():
         else:
             print("OS ERROR")
             exit(1)
-            
-        
+
+
 
         router_path = os.path.join(cache_dir, "mobility_router.pkl")
 
@@ -96,9 +96,14 @@ def add_complaint_comment(complaint):
 
 @app.route("/complaint/<complaint:complaint>/image")
 def complaint_image(complaint):
-    image = complaint.image()
+    result = complaint.image
 
-    return ("The given complaint has no attached image.", 404) if image is None else image
+    if result is None:
+        return "The given complaint has no attached image.", 404
+
+    return result[0], 200, {
+        "Content-Type": result[1]
+    }
 
 @app.put("/complaint/<complaint:complaint>/resolve")
 def resolve_complaint(complaint):
@@ -112,13 +117,18 @@ def complaints():
 
 @app.post("/complaints")
 def create_complaint():
+    if "image" in flask.request.files:
+        image = flask.request.files["image"].read()
+    else:
+        image = None
+
     try:
         get_db().create_complaint(
             flask.request.form["latitude"],
             flask.request.form["longitude"],
             flask.request.form["description"],
             poster_name=flask.request.form.get("name", None),
-            image=flask.request.form.get("image"),
+            image=image,
             image_type=flask.request.content_type
         )
     except KeyError:
@@ -139,10 +149,12 @@ def location_path():
     if any(location not in get_router().nodes for location in locations):
         return "One or more of the specified location IDs don't exist.", 400
 
+    complaints = [complaint.serialize() for complaint in get_db().all_complaints()]
+
     result = []
 
     for i in range(len(locations) - 1):
-        path = get_router().compute_path(locations[i], locations[i + 1])
+        path = get_router().compute_path(locations[i], locations[i + 1], complaints)
 
         if path is None:
             return f"No path could be found from {locations[i]} to {locations[i + 1]}", 204

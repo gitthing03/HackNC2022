@@ -96,11 +96,11 @@ class DatabaseComplaint:
 
 	@property
 	def image(self):
-		self.db.cur.execute("SELECT image FROM complaints WHERE id = %s;", (self.id,))
+		self.db.cur.execute("SELECT image, image_type FROM complaints WHERE id = %s;", (self.id,))
 
-		image = self.db.cur.fetchone()[0]
+		image, image_type = self.db.cur.fetchone()
 
-		return None if image is None else bytes(image)
+		return None if image is None else (bytes(image), image_type)
 
 	@image.setter
 	def set_image(self, image_image_type):

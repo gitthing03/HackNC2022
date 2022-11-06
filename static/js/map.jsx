@@ -2,16 +2,22 @@ function ComplaintOrComment(props) {
 	const date = new Date(props.timestamp * 1000)
 
 	return (
-		<div class="complaint card bg-light border shadow-sm mb-2">
+		<div class={`card bg-light border shadow-sm mb-2${props.imageSrc == null ? " complaint" : ""}`}>
 			<div class="card-body">
 				<div class="d-flex align-items-center justify-content-between">
-					<span>{props.name ?? "(Anonymous)"}</span>
+					<span>{props.name == null || props.name == "" ? "(Anonymous)" : props.name}</span>
 					<span class="text-secondary">
 						{`${date.toLocaleDateString("en-US")} ${date.toLocaleTimeString("en-US", {timeStyle: "short"})}`}
 					</span>
 				</div>
 
 				<p class="text-truncate">{props.body ?? props.description}</p>
+
+				{props.imageSrc == null ? null :
+					<img
+						class="w-100"
+						src={props.imageSrc}
+						onError={event => event.currentTarget.style.display = "none"}/>}
 			</div>
 		</div>
 	)
@@ -40,7 +46,7 @@ function Main() {
 			},
 
 			body: JSON.stringify({
-				name: commentNameRef.current.value == "" ? null : commentNameRef.current.value,
+				name: commentNameRef.current.value,
 				body: commentBody
 			})
 		}).then(() => window.location.reload())
@@ -93,11 +99,19 @@ function Main() {
 
 				{selectedComplaint == null ?
 					<div class="overflow-scroll">
-						{complaints.map(complaint => <ComplaintOrComment {...complaint}/>)}
+						{complaints.map(complaint => (
+							<ComplaintOrComment
+								imageSrc={`/complaint/${complaint["id"]}/image`}
+
+								{...complaint}/>
+						))}
 					</div> :
 
 					<>
-						<ComplaintOrComment {...selectedComplaint}/>
+						<ComplaintOrComment
+							imageSrc={`/complaint/${selectedComplaint["id"]}/image`}
+
+							{...selectedComplaint}/>
 
 						<hr class="mt-2 mb-3"/>
 

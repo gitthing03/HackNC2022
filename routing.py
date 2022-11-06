@@ -38,39 +38,54 @@ class RouterPathNode:
 class Router:
 	OSM_URL = "https://lz4.overpass-api.de/api/interpreter"
 
-	area_name = "University of North Carolina"
+	AREA_NAME = "University of North Carolina"
 
-	connectivity_threshold = 1.2
+	ACCESSIBILITY_THRESHOLD = 0.00015
+	CONNECTIVITY_THRESHOLD = 1.2
+
+	@staticmethod
+	def _point_distance(p1, p2):
+		return math.sqrt((p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2)
 
 	def _compute_building_highway_connectivity(self, building_nodes, highway_nodes):
 		for building_id, building in self.buildings.items():
 			max_distance = max(
-				self._point_distance(self.nodes[node_id], building.center) for node_id in building_nodes[building_id]
+				self.__class__._point_distance(self.nodes[node_id], building.center)
+
+				for node_id in building_nodes[building_id]
 			)
 
 			for node_id in highway_nodes:
 				node = self.nodes[node_id]
 
-				threshold = self.__class__.connectivity_threshold * max_distance
+				threshold = self.__class__.CONNECTIVITY_THRESHOLD * max_distance
 
-				if self._point_distance(building.center, node) < threshold:
+				if self.__class__._point_distance(building.center, node) < threshold:
 					self.node_conn[building.center_id].append(node_id)
 					self.node_conn[node_id].append(building.center_id)
 
-	def _point_distance(self, p1, p2):
-		return math.sqrt((p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2)
+	def compute_path(self, location1, location2, complaints):
+		def is_valid_node(node_id):
+			return node_id in (location1, location2) or (
+				node_id not in self.building_centers and all(
+					self.__class__._point_distance(
+						self.nodes[node_id],
 
-	def compute_path(self, location1, location2):
+						(complaint["latitude"], complaint["longitude"])
+					) > self.__class__.ACCESSIBILITY_THRESHOLD for complaint in complaints
+				)
+			)
+
 		graph = dijkstar.Graph()
 
 		for left_id, conn in self.node_conn.items():
-			if left_id in (location1, location2) or left_id not in self.building_centers:
+			if is_valid_node(left_id):
 				for right_id in conn:
-					if right_id in (location1, location2) or right_id not in self.building_centers:
+					if is_valid_node(right_id):
 						graph.add_edge(
 							left_id,
 							right_id,
-							self._point_distance(self.nodes[left_id], self.nodes[right_id])
+							self.__class__._point_distance(self.nodes[left_id], self.nodes[right_id])
 						)
 
 		try:
@@ -109,7 +124,7 @@ class Router:
 		json = requests.get(self.__class__.OSM_URL, data=f"""
 [out:json];
 
-area[name="{self.__class__.area_name}"] -> .search_area;
+area[name="{self.__class__.AREA_NAME}"] -> .search_area;
 
 (
 	way(area.search_area)[highway=footway];
