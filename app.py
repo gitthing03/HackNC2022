@@ -2,6 +2,7 @@ import flask
 import os
 import pickle
 import werkzeug.routing
+from sys import platform
 
 import db
 import routing
@@ -24,6 +25,7 @@ app = flask.Flask(__name__)
 app.url_map.converters["complaint"] = ComplaintConverter
 
 app.debug = True
+app.templates_auto_reload = True
 
 @app.route("/about")
 def about():
@@ -42,7 +44,15 @@ def get_db():
 
 def get_router():
     if "router" not in flask.g:
-        cache_dir = os.environ.get("XDG_CACHE_HOME", os.path.join(os.environ["HOME"], ".cache"))
+        if platform.startswith("linux"):
+            cache_dir = os.environ.get("XDG_CACHE_HOME", os.path.join(os.environ["HOME"], ".cache"))
+        elif platform == "win32":
+            cache_dir =  os.getenv("APPDATA")
+        else:
+            print("OS ERROR")
+            exit(1)
+            
+        
 
         router_path = os.path.join(cache_dir, "mobility_router.pkl")
 
