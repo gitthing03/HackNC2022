@@ -1,0 +1,13 @@
+body {
+	display: flex;
+	flex-direction: column;
+	height: 100vh;
+}
+
+.location-input {
+	width: 20rem;
+}
+
+.location-input:hover {
+	cursor: pointer;
+}

@@ -19,7 +19,7 @@ app = flask.Flask(__name__)
 app.url_map.converters["complaint"] = ComplaintConverter
 
 @app.teardown_request
-def close_db():
+def close_db(_):
     if "db" in flask.g:
         flask.g.db.__exit__()
 
