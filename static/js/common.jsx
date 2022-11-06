@@ -1,6 +1,26 @@
 const DEFAULT_CENTER = ol.proj.fromLonLat([-79.046761, 35.904613])
+// coordsList = [[-79.046761, 35.904613], [-70, 40]]
 
 const STROKE_COLOR = "#800080"
+
+// function createLocator(map, CoordinatesList) {
+// 	for (const coord in CoordinatesList) {
+// 		console.log('hello')
+// 		long = coord[0]
+// 		lat = coord[1]
+// 		centre = ol.proj.fromLonLat([long, lat])
+// 		const layer = new ol.layer.Vector({
+// 		source: new ol.source.Vector({
+// 			features: [
+// 				new ol.Feature({
+// 					geometry: new ol.geom.Point([centre])
+// 				})
+// 			]
+// 		})});
+// 	}
+// 	map.addLayer(layer);
+// }
+
 
 function Map() {
 	const popupContainerRef = React.useRef()
@@ -33,7 +53,8 @@ function Map() {
 			})
 		});
 
-
+		console.log("printing 1")
+		// createLocator(map, coordsList)
 		const layer = new ol.layer.Vector({
 			  source: new ol.source.Vector({
 				  features: [
