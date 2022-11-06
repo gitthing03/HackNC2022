@@ -112,7 +112,7 @@ function Main() {
 	}
 
 	return (
-		<div class="d-flex flex-column h-100 p-3">
+		<div class="d-flex flex-column h-100">
 			<div class="d-flex align-items-center justify-content-between me-3">
 				<div class="d-flex align-items-center flex-wrap" ref={locationInputsRef}>
 					{inputs}
@@ -128,46 +128,38 @@ function Main() {
 				</button>
 			</div>
 
-			<div class="d-flex flex-grow-1">
-				<div class="card col-9 bg-light border me-3 shadow">
-					<div class="card-body">
-						<Map ref={mapRef}/>
-					</div>
-				</div>
+			<div class="flex-grow-1">
+				<MapAndSidebar ref={mapRef}>
+					{path == null ? "Choose your route to find the most accessible path." :
+						(() => {
+							const instructions = []
 
-				<div class="card flex-grow-1 bg-light border shadow">
-					<div class="card-body">
-						{path == null ? "Choose your route to find the most accessible path." :
-							(() => {
-								const instructions = []
+							let last_nbn = null;
 
-								let last_nbn = null;
+							for (let i = 1; i < path.length - 1; i++) {
+								if (i == 1 || (
+									path[i]["nearest_building_name"] != null &&
+									path[i]["nearest_building_name"] != last_nbn
+								)) {
+									instructions.push((
+										<div class="card bg-light border shadow mb-2">
+											<div class="card-body d-flex align-items-center">
+												<span class="badge bg-secondary rounded-pill me-3">
+													{instructions.length + 1}
+												</span>
 
-								for (let i = 1; i < path.length - 1; i++) {
-									if (i == 1 || (
-										path[i]["nearest_building_name"] != null &&
-										path[i]["nearest_building_name"] != last_nbn
-									)) {
-										instructions.push((
-											<div class="card bg-light border shadow mb-2">
-												<div class="card-body d-flex align-items-center">
-													<span class="badge bg-secondary rounded-pill me-3">
-														{instructions.length + 1}
-													</span>
-
-													{`Continue along ${path[i]["nearest_building_name"]}`}
-												</div>
+												{`Continue along ${path[i]["nearest_building_name"]}`}
 											</div>
-										))
+										</div>
+									))
 
-										last_nbn = path[i]["nearest_building_name"];
-									}
+									last_nbn = path[i]["nearest_building_name"];
 								}
+							}
 
-								return instructions
-							})()}
-					</div>
-				</div>
+							return instructions
+						})()}
+				</MapAndSidebar>
 			</div>
 		</div>
 	)

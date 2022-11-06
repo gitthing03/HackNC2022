@@ -11,20 +11,22 @@ class DatabaseComment:
 
 	def serialize(self):
 		return {
-			"body": body,
-			"name": name,
-			"timestamp": time.mktime(timestamp.timetuple())
+			"body": self.body,
+			"name": self.name,
+			"timestamp": time.mktime(self.timestamp.timetuple())
 		}
 
 class Database:
 	def __init__(self):
 		self.conn = psycopg2.connect("dbname=hacknc2022")
+		self.conn.autocommit = True
 		self.cur = self.conn.cursor()
 
 		self.cur.execute("""
 CREATE TABLE IF NOT EXISTS complaints (
 	id SERIAL PRIMARY KEY,
-	location INTEGER NOT NULL,
+	latitude DOUBLE PRECISION NOT NULL,
+	longitude DOUBLE PRECISION NOT NULL,
 	description TEXT NOT NULL,
 	name TEXT,
 	image BYTEA,
@@ -39,7 +41,8 @@ CREATE TABLE IF NOT EXISTS comments (
 	id SERIAL PRIMARY KEY,
 	complaint_id INTEGER REFERENCES complaints NOT NULL,
 	body TEXT NOT NULL,
-	name TEXT
+	name TEXT,
+	timestamp TIMESTAMP WITH TIME ZONE NOT NULL
 );""")
 
 	def __exit__(self):
@@ -58,17 +61,18 @@ CREATE TABLE IF NOT EXISTS comments (
 			return DatabaseComplaint(self, id_)
 
 	def create_complaint(self,
-		location,
+		latitude,
+		longitude,
 		description,
 		poster_name=None,
 		image=None,
 		image_type=None
 	):
 		self.cur.execute("""
-INSERT INTO complaints (location, description, name, image, image_type, timestamp)
-	VALUES (%s, %s, %s, %s, %s, NOW())
+INSERT INTO complaints (latitude, longitude, description, name, image, image_type, timestamp)
+	VALUES (%s, %s, %s, %s, %s, %s, NOW())
 	RETURNING id;
-""", (location, description, poster_name, image, None if image is None else image_type))
+""", (latitude, longitude, description, poster_name, image, None if image is None else image_type))
 
 		return DatabaseComplaint(self, self.cur.fetchone()[0])
 
@@ -80,9 +84,9 @@ class DatabaseComplaint:
 
 	def add_comment(self, body, name=None):
 		self.db.cur.execute(
-			"INSERT INTO comments (complaint_id, body, name) VALUES(%s, %s, %s);",
+			"INSERT INTO comments (complaint_id, body, name, timestamp) VALUES(%s, %s, %s, NOW());",
 
-			(self.id_, body, name)
+			(self.id, body, name)
 		)
 
 	def all_comments(self):
@@ -106,9 +110,11 @@ class DatabaseComplaint:
 			(*image_image_type, self.id)
 		)
 
-	def serialize(self, router):
-		self.db.cur.execute(
-			"SELECT location, description, name, resolved FROM complaints WHERE id = %s;",
+	def serialize(self):
+		self.db.cur.execute("""
+SELECT latitude, longitude, description, name, resolved, EXTRACT(epoch FROM timestamp)
+	FROM complaints
+	WHERE id = %s;""",
 
 			(self.id,)
 		)
@@ -116,11 +122,13 @@ class DatabaseComplaint:
 		row = self.db.cur.fetchone()
 
 		return {
-			"id": row[0],
-			"location": router.nodes[row[1]],
+			"id": self.id,
+			"latitude": row[0],
+			"longitude": row[1],
 			"description": row[2],
 			"name": row[3],
-			"resolved": row[4]
+			"resolved": row[4],
+			"timestamp": row[5]
 		}
 
 	def set_resolved(self, resolved):

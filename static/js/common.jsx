@@ -1,21 +1,16 @@
 const DEFAULT_CENTER = ol.proj.fromLonLat([-79.046761, 35.904613])
-// coordsList = [[-79.046761, 35.904613], [-70, 40]]
 
 const STROKE_COLOR = "#800080"
 
-const Map = React.forwardRef((_, ref) => {
+const Map = React.forwardRef((props, ref) => {
 	const [map, setMap] = React.useState()
-
-	const [popupContent, setPopupContent] = React.useState("")
-
-	const popupContainerRef = React.useRef()
 
 	React.useEffect(() => {
 		const attribution = new ol.control.Attribution({
 			collapsible: false
 		});
 
-		setMap(new ol.Map({
+		const map = new ol.Map({
 			controls: ol.control.defaults({attribution: false}).extend([attribution]),
 			layers: [
 				new ol.layer.Tile({
@@ -34,37 +29,42 @@ const Map = React.forwardRef((_, ref) => {
 				zoom: 17,
 				minZoom: 16
 			})
-		}), map => {
-			const layer = new ol.layer.Vector({
-				source: new ol.source.Vector({
-					features: [
-						new ol.Feature({
-							geometry: new ol.geom.Point(DEFAULT_CENTER)
-						})
-					]
+		})
+
+		setMap(map)
+
+		const layer = new ol.layer.Vector({
+			source: new ol.source.Vector({
+				features: props.complaints.map(complaint => new ol.Feature({
+					complaintId: complaint["id"],
+					geometry: new ol.geom.Point(
+						ol.proj.fromLonLat([complaint["longitude"], complaint["latitude"]])
+					)
+				}))
+			}),
+
+			style: [
+				new ol.style.Style({
+					image: new ol.style.Circle({
+						radius: 10,
+
+						fill: new ol.style.Fill({
+							color: "red"
+						}),
+					})
 				})
-		  })
+			],
+		})
 
-		  map.addLayer(layer)
-
-		  const overlay = new ol.Overlay({
-			  element: popupContainerRef.current,
-			  autoPan: true,
-			  autoPanAnimation: {
-				  duration: 250
-			  }
-		  })
-
-		  map.addOverlay(overlay)
-		  map.on("singleclick", event => {
-			  if (map.hasFeatureAtPixel(event.pixel) === true) {
-				  overlay.setPosition(event.coordinate)
-
-				  setPopupContent("<b>Hello world!</b><br/>I am a popup.")
-			  } else {
-				overlay.setPosition(undefined);
-			  }
-			})
+		map.addLayer(layer)
+		map.on("singleclick", event => {
+			if (map.hasFeatureAtPixel(event.pixel)) {
+				map.forEachFeatureAtPixel(event.pixel, feature => {
+					props.onClickComplaint(feature.get("complaintId"))
+				})
+			} else {
+				props.onClick(ol.proj.toLonLat(event.coordinate))
+			}
 		})
 	}, [])
 
@@ -103,16 +103,44 @@ const Map = React.forwardRef((_, ref) => {
 					],
 				})
 			)
-		}
+		},
 	}))
 
-	return <>
-		<div id="map" class="w-100 h-100"></div>
-
-		<div class="ol-popup" ref={popupContainerRef}>
-			<div dangerouslySetInnerHTML={{
-				__html: popupContent
-			}}></div>
-		</div>
-	</>
+	return <div id="map" class="w-100 h-100"/>
 })
+
+Map.defaultProps = {
+	complaints: [],
+
+	onClick: () => {},
+	onClickComplaint: () => {}
+}
+
+const MapAndSidebar = React.forwardRef((props, ref) => {
+	return (
+		<div class="d-flex h-100">
+			<div class="card col-9 bg-light border me-3 shadow">
+				<div class="card-body">
+					<Map
+						complaints={props.complaints}
+						onClick={coordinate => props.onClick(coordinate)}
+						onClickComplaint={complaintId => props.onClickComplaint(complaintId)}
+						ref={ref}/>
+				</div>
+			</div>
+
+			<div class="card flex-grow-1 bg-light border shadow">
+				<div class="card-body d-flex flex-column">
+					{props.children}
+				</div>
+			</div>
+		</div>
+	)
+})
+
+MapAndSidebar.defaultProps = {
+	complaints: [],
+
+	onClick: () => {},
+	onClickComplaint: () => {}
+}

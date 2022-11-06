@@ -86,8 +86,8 @@ def complaint_comments(complaint):
 def add_complaint_comment(complaint):
     try:
         complaint.add_comment(
-            flask.request.data["body"],
-            name=flask.request.data.get("name")
+            flask.request.json["body"],
+            name=flask.request.json.get("name")
         )
     except KeyError:
         return "Please specify a body and, optionally, the name of the poster.", 400
@@ -114,7 +114,8 @@ def complaints():
 def create_complaint():
     try:
         get_db().create_complaint(
-            flask.request.form["location"],
+            flask.request.form["latitude"],
+            flask.request.form["longitude"],
             flask.request.form["description"],
             poster_name=flask.request.form.get("name", None),
             image=flask.request.form.get("image"),
