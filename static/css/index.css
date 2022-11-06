@@ -1,11 +1,18 @@
 #walk {
-  width: 100%;
+  width: 160%;
+  margin-left: -65px;
+  z-index: 2;
 }
-
 #walk2 {
-  width: 80%;
+  width: 150%;
+  margin-left: -300px;
+  margin-top: -80px;
+  z-index: 1;
 }
 
+body {
+  overflow-x: hidden;
+}
 .h1 {
   font-size: 6em;
 }

@@ -23,6 +23,12 @@ class ComplaintConverter(werkzeug.routing.BaseConverter):
 app = flask.Flask(__name__)
 app.url_map.converters["complaint"] = ComplaintConverter
 
+app.debug = True
+
+@app.route("/about")
+def about():
+    return flask.render_template("about.html")
+
 @app.teardown_request
 def close_db(_):
     if "db" in flask.g:
