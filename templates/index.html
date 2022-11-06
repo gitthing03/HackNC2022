@@ -1,16 +1,16 @@
 {% extends "base.html" %}
 
 {% block head%}
-<link href="static/index.css" rel="stylesheet">
+<link href="{{url_for('static', filename='css/index.css')}}" rel="stylesheet">
 {% endblock %}
 
 {% block body %}
 
-<main>
+<main class="gradient-custom">
     <div class="container text-center pt-3">
         <p class="h1 pt-5">Mobility</p>
         <p class="h2 pb-2">Always find the right path for you.</p>
-        <a href="/routing"><button class="btn btn-primary btn-lg">Find a path</button></a>
+        <a href="{{url_for('directions')}}"><button class="btn btn-primary btn-lg">Find a path</button></a>
     </div>
     <div class="container pt-64">
         <div class="row">
@@ -33,7 +33,7 @@
         </div>
     </div>
     <div class="container text-center pt-64">
-        <a href="/index"><button class="btn btn-primary btn-lg btn-block">View the map</button></a>
+        <a href="{{url_for('map')}}"><button class="btn btn-primary btn-lg btn-block">View the map</button></a>
     </div>
 </main>
 
