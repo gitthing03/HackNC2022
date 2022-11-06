@@ -12,6 +12,7 @@
     {% block head %}
     {% endblock %}
     </head>
+    {% block outerbody %}
     <body>
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
             <a class="navbar-brand" href="/">Mobility</a>
@@ -20,17 +21,13 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
               <div class="navbar-nav">
-<<<<<<< HEAD
-                <a class="nav-item nav-link active" href="/">Home</a>
-                <a class="nav-item nav-link active" href="/concerns">Index</a>
-=======
-                <a class="nav-item nav-link active" href="#">Index</a>
->>>>>>> b679dabd692245a8cd829bd998a84338d47bdcd5
-                <a class="nav-item nav-link active" href="#">Routing</a>
+                <a class="nav-item nav-link active" href="#">Map</a>
+                <a class="nav-item nav-link active" href="/routing">Routing</a>
               </div>
             </div>
           </nav>
         {% block body %}
         {% endblock %}
     </body>
+    {% endblock %}
 </html>
