@@ -17,7 +17,7 @@ class DatabaseComment:
 		}
 
 class Database:
-	def __init__(self, app_config):
+	def __init__(self):
 		self.conn = psycopg2.connect("dbname=hacknc2022")
 		self.cur = self.conn.cursor()
 

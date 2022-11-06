@@ -1,5 +1,10 @@
-import flask, os, werkzeug.routing, pickle, db, routing
+import flask
+import os
+import pickle
+import werkzeug.routing
 
+import db
+import routing
 
 class ComplaintConverter(werkzeug.routing.BaseConverter):
     def to_python(self, value):
@@ -36,13 +41,15 @@ def get_router():
         router_path = os.path.join(cache_dir, "mobility_router.pkl")
 
         try:
-            with open(router_path) as file:
+            with open(router_path, "rb") as file:
                 flask.g.router = pickle.load(file)
         except FileNotFoundError:
             flask.g.router = routing.Router()
             flask.g.router.populate_cache()
 
-            with open(router_path, "w") as file:
+            print(flask.g.router)
+
+            with open(router_path, "wb") as file:
                 pickle.dump(flask.g.router, file)
 
     return flask.g.router
@@ -52,7 +59,7 @@ def index():
     return flask.render_template("index.html")
 
 @app.route("/map")
-def map():
+def map_():
     return flask.render_template("map.html")
 
 @app.route("/complaint/<complaint:complaint>/comments")
@@ -102,16 +109,46 @@ def create_complaint():
 
     return ""
 
-@app.route("/building_location")
-def building_location():
+@app.post("/location_path")
+def location_path():
+    try:
+        locations = list(map(int, flask.request.json))
+    except (TypeError, ValueError):
+        return "Please specify integer location IDs.", 400
+
+    if len(locations) < 2:
+        return "Please specify at least two location IDs.", 400
+
+    if any(location not in get_router().nodes for location in locations):
+        return "One or more of the specified location IDs don't exist.", 400
+
+    result = []
+
+    for i in range(len(locations) - 1):
+        path = get_router().compute_path(locations[i], locations[i + 1])
+
+        if path is None:
+            return f"No path could be found from {locations[i]} to {locations[i + 1]}", 204
+
+        result.extend(path if i == 0 else path[1:])
+
+    return flask.jsonify([node.serialize() for node in result])
+
+@app.route("/location_search")
+def location_search():
     if "q" not in flask.request.args:
         return 'Please specify a search term using the "q" query parameter.', 400
 
-    for building in get_router().buildings.values():
-        if flask.request.args["q"] in building.name:
-            return str(building.center_id)
+    result = []
 
-    return "No building matches the specified search term.", 404
+    for building in get_router().buildings.values():
+        if flask.request.args["q"].lower() in building.name.lower():
+            result.append({
+                "name": building.name,
+                "location": building.center_id
+            })
+
+    return flask.jsonify(result)
 
 @app.route("/directions")
 def directions():

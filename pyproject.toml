@@ -10,6 +10,7 @@ flask = "^2.2.2"
 psycopg2 = "^2.9.5"
 python = "^3.10"
 requests = "^2.28.1"
+dijkstar = "^2.6.0"
 
 [build-system]
 requires = ["poetry-core"]
